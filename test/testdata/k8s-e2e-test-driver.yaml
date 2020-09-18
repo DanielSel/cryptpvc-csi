@@ -1,0 +1,16 @@
+StorageClass:
+  FromName: true
+SnapshotClass:
+  FromName: true
+DriverInfo:
+  Name: cryptpvc.zerocloud.io
+  Capabilities:
+    block: true
+    controllerExpansion: true
+    exec: true
+    multipods: true
+    persistence: true
+    pvcDataSource: true
+    snapshotDataSource: true
+InlineVolumes:
+- Attributes: {}
