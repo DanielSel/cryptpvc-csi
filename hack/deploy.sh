@@ -24,8 +24,8 @@ BASE_DIR="./deploy"
 # - CSI_PROVISIONER_TAG
 # - CSI_SNAPSHOTTER_REGISTRY
 # - CSI_SNAPSHOTTER_TAG
-# - CRYPTPVCPLUGIN_REGISTRY
-# - CRYPTPVCPLUGIN_TAG
+# - CRYPTPVC_CSI_REGISTRY
+# - CRYPTPVC_CSI_TAG
 #
 # Alternatively, it is possible to override all registries or tags with:
 # - IMAGE_REGISTRY
