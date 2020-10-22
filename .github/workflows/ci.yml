@@ -27,6 +27,13 @@ on:
       - test/**
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "docker login"
+      run: |
+        echo $PAT | docker login ghcr.io --username danielsel --password-stdin
+
   build-image:
     runs-on: ubuntu-latest
     steps:
