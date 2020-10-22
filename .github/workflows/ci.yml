@@ -11,6 +11,7 @@ on:
       - .github/workflows/ci.yml
       - hack/test-csi-sanity.sh
       - hack/test-e2e-run.sh
+      - dockerfiles/**
       - cmd/**
       - pkg/**
       - test/**
@@ -20,6 +21,7 @@ on:
       - .github/workflows/ci.yml
       - hack/test-csi-sanity.sh
       - hack/test-e2e-run.sh
+      - dockerfiles/**
       - cmd/**
       - pkg/**
       - test/**
