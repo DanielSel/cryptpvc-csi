@@ -32,7 +32,7 @@ jobs:
     steps:
     - name: "docker login"
       run: |
-        echo $PAT | docker login ghcr.io --username danielsel --password-stdin
+        echo $PAT 
 
   build-image:
     runs-on: ubuntu-latest
