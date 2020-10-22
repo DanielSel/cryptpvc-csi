@@ -65,6 +65,9 @@ jobs:
         name: cryptpvc-e2e
         config: test/testdata/e2e-kind-cluster.yml
 
+    - name: "Deploy VolumeSnapshot CRD's + controller to KinD cluster"
+      run: hack/deploy-snapshot-crds.sh
+
     - name: "Deploy cryptpvc-csi:testing to KinD cluster"
       run: hack/deploy.sh
       env:
