@@ -35,7 +35,7 @@ jobs:
       run: docker build -t cryptpvc-test-sanity -f dockerfiles/cryptpvc.dockerfile --target test-sanity .
 
     - name: "Test cryptpvc-csi using csi-sanity"
-      run: docker run --privileged --rm -it cryptpvc-test-sanity
+      run: docker run --privileged --rm cryptpvc-test-sanity
 
     - name: "Pre-release runtime image for e2e testing"
       run: |
@@ -71,3 +71,18 @@ jobs:
 
     - name: "Run E2E storage tests using kubetest"
       run: 'kubetest --deployment=local --test --check-version-skew=false --test_args="--ginkgo.focus=External.*Storage.* --storage.testdriver=/test/testdata/k8s-e2e-test-driver.yaml" --extract v1.18.6'
+
+  release:
+    if: github.event_name == 'push'
+    needs: ["build-image", "test-e2e-kind"]
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout git repository"
+      uses: actions/checkout@v2
+
+    - name: "Release new image version (latest)"
+      run: |
+        docker pull ghcr.io/danielsel/cryptpvc-csi:testing
+        docker tag ghcr.io/danielsel/cryptpvc-csi:testing ghcr.io/danielsel/cryptpvc-csi:latest
+        echo $PAT | docker login ghcr.io --username danielsel --password-stdin
+        docker push ghcr.io/danielsel/cryptpvc-csi:latest
