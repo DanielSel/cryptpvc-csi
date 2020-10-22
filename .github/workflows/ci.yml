@@ -27,13 +27,6 @@ on:
       - test/**
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-    - name: "docker login"
-      run: |
-        echo $PAT 
-
   build-image:
     runs-on: ubuntu-latest
     steps:
@@ -51,6 +44,8 @@ jobs:
         docker build -t ghcr.io/danielsel/cryptpvc-csi:testing -f dockerfiles/cryptpvc.dockerfile .
         echo $PAT | docker login ghcr.io --username danielsel --password-stdin
         docker push ghcr.io/danielsel/cryptpvc-csi:testing
+      env:
+        PAT: ${{ secrets.PAT }}
 
   test-e2e-kind:
     needs: build-image
@@ -95,3 +90,5 @@ jobs:
         docker tag ghcr.io/danielsel/cryptpvc-csi:testing ghcr.io/danielsel/cryptpvc-csi:latest
         echo $PAT | docker login ghcr.io --username danielsel --password-stdin
         docker push ghcr.io/danielsel/cryptpvc-csi:latest
+      env:
+        PAT: ${{ secrets.PAT }}
