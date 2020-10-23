@@ -61,7 +61,7 @@ spec:
             name: csi-data-dir
 
         - name: cryptpvc
-          image: docker.io/dsos/cryptpvc-csi:latest
+          image: ghcr.io/danielsel/cryptpvc-csi:latest
           args:
             - "--drivername=cryptpvc.zerocloud.io"
             - "--v=5"
