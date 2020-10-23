@@ -68,17 +68,6 @@ jobs:
     - name: "Deploy VolumeSnapshot CRD's + controller to KinD cluster"
       run: hack/deploy-snapshot-crds.sh
 
-    - name: "DEBUG"
-      run: |
-        kubectl cluster-info
-        kubectl get pods --all-namespaces
-        sleep 30
-        kubectl get pods --all-namespaces
-        sleep 30
-        kubectl get pods --all-namespaces
-        sleep 30
-        kubectl get pods --all-namespaces
-
     - name: "Deploy cryptpvc-csi:testing to KinD cluster"
       run: hack/deploy.sh
       env:
