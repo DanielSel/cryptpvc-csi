@@ -73,6 +73,13 @@ jobs:
       env:
         CRYPTPVC_CSI_TAG: testing
 
+    - name: "Configure access to kubetest binaries on (public?) GCP storage"
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_SONNY }}
+        export_default_credentials: true
+
     - name: "Run E2E storage tests using kubetest"
       run: hack/test-e2e-run.sh
 
