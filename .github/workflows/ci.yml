@@ -60,7 +60,7 @@ jobs:
         go-version: '^1.4'
 
     - name: "Setup KinD cluster for e2e testing"
-      uses: engineerd/setup-kind@v0.4.0
+      uses: engineerd/setup-kind@master
       with:
         name: cryptpvc-e2e
         config: test/testdata/e2e-kind-cluster.yml
