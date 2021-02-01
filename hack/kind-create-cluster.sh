@@ -1,0 +1,1 @@
+kind create cluster --name cryptpvc-e2e --config test/testdata/e2e-kind-cluster.yml
