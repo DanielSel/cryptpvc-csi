@@ -131,7 +131,7 @@ spec:
         - hostPath:
             # 'path' is where PV data is persisted on host.
             # using /tmp is also possible while the PVs will not available after plugin container recreation or host reboot
-            path: /var/lib/cryptpvc/
+            path: /csi-data-dir
             type: DirectoryOrCreate
           name: csi-data-dir
         - hostPath:

@@ -61,7 +61,7 @@ jobs:
         name: cryptpvc-e2e
         config: test/testdata/e2e-kind-cluster.yml
 
-    - name: "Pull pre-release runtime image and load into KinD cluster"
+    - name: "Pull image and load into KinD cluster"
       run: |
         docker pull ghcr.io/danielsel/cryptpvc-csi:testing
         kind load docker-image --name cryptpvc-e2e ghcr.io/danielsel/cryptpvc-csi:testing
