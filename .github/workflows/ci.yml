@@ -1,0 +1,102 @@
+name: ci
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - .github/workflows/ci.yml
+      - hack/test-csi-sanity.sh
+      - hack/test-e2e-run.sh
+      - dockerfiles/**
+      - cmd/**
+      - pkg/**
+      - test/**
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/ci.yml
+      - hack/test-csi-sanity.sh
+      - hack/test-e2e-run.sh
+      - dockerfiles/**
+      - cmd/**
+      - pkg/**
+      - test/**
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout git repository"
+      uses: actions/checkout@v2
+
+    - name: "Build cryptpvc-csi (go build) + csi-sanity"
+      run: docker build -t cryptpvc-test-sanity -f dockerfiles/cryptpvc.dockerfile --target test-sanity .
+
+    - name: "Test cryptpvc-csi using csi-sanity"
+      run: docker run --privileged --rm cryptpvc-test-sanity
+
+    - name: "Pre-release runtime image for e2e testing"
+      run: |
+        docker build -t ghcr.io/danielsel/cryptpvc-csi:testing -f dockerfiles/cryptpvc.dockerfile .
+        echo $PAT | docker login ghcr.io --username danielsel --password-stdin
+        docker push ghcr.io/danielsel/cryptpvc-csi:testing
+      env:
+        PAT: ${{ secrets.PAT }}
+
+  test-e2e-kind:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout git repository"
+      uses: actions/checkout@v2
+
+    - name: "Setup Go (golang) environment"
+      uses: actions/setup-go@v2
+      with:
+        go-version: '^1.4'
+
+    - name: "Setup KinD cluster for e2e testing"
+      uses: engineerd/setup-kind@v0.5.0
+      with:
+        name: cryptpvc-e2e
+        config: test/testdata/e2e-kind-cluster.yml
+
+    - name: "Pull image and load into KinD cluster"
+      run: |
+        docker pull ghcr.io/danielsel/cryptpvc-csi:testing
+        kind load docker-image --name cryptpvc-e2e ghcr.io/danielsel/cryptpvc-csi:testing
+
+    - name: "Deploy VolumeSnapshot CRD's + controller to KinD cluster"
+      run: hack/deploy-snapshot-crds.sh
+
+    - name: "Deploy cryptpvc-csi:testing to KinD cluster"
+      run: hack/deploy.sh
+      env:
+        CRYPTPVC_CSI_TAG: testing
+
+    - name: "Configure access to kubetest binaries on (public?) GCP storage"
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_SONNY }}
+        export_default_credentials: true
+
+    - name: "Run E2E storage tests using kubetest"
+      run: hack/test-e2e-run.sh
+
+  release:
+    if: github.event_name == 'push'
+    needs: ["build-image", "test-e2e-kind"]
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout git repository"
+      uses: actions/checkout@v2
+
+    - name: "Release new image version (latest)"
+      run: |
+        docker pull ghcr.io/danielsel/cryptpvc-csi:testing
+        docker tag ghcr.io/danielsel/cryptpvc-csi:testing ghcr.io/danielsel/cryptpvc-csi:latest
+        echo $PAT | docker login ghcr.io --username danielsel --password-stdin
+        docker push ghcr.io/danielsel/cryptpvc-csi:latest
+      env:
+        PAT: ${{ secrets.PAT }}

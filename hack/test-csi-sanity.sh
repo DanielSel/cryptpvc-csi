@@ -22,7 +22,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Build cryptpvc-csi
-go build -o ./bin/cryptpvc-csi ./cmd/cryptpvc-csi
+if [ ! -f ./bin/cryptpvc-csi ]; then
+    go build -o ./bin/cryptpvc-csi ./cmd/cryptpvc-csi
+fi
 
 # Start the application in the background
 ./bin/$APP --endpoint=$CSI_ENDPOINT --nodeid=1 &

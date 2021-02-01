@@ -31,7 +31,7 @@ import (
 	"k8s.io/utils/mount"
 )
 
-const TopologyKeyNode = "topology.cryptpvc.csi/node"
+const TopologyKeyNode = "topology.cryptpvc.zerocloud.io/node"
 
 type nodeServer struct {
 	nodeID            string

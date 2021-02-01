@@ -24,8 +24,8 @@ BASE_DIR="./deploy"
 # - CSI_PROVISIONER_TAG
 # - CSI_SNAPSHOTTER_REGISTRY
 # - CSI_SNAPSHOTTER_TAG
-# - CRYPTPVCPLUGIN_REGISTRY
-# - CRYPTPVCPLUGIN_TAG
+# - CRYPTPVC_CSI_REGISTRY
+# - CRYPTPVC_CSI_TAG
 #
 # Alternatively, it is possible to override all registries or tags with:
 # - IMAGE_REGISTRY
@@ -64,7 +64,7 @@ function rbac_version () {
     image="$2"
     update_rbac="$3"
 
-    # get version from `image: quay.io/k8scsi/csi-attacher:v1.0.1`, ignoring comments
+    # get version from `image: quay.io/k8scsi/csi-attacher:v3.0.1`, ignoring comments
     version="$(sed -e 's/ *#.*$//' "$yaml" | grep "image:.*$image" | sed -e 's/ *#.*//' -e 's/.*://')"
 
     if $update_rbac; then
@@ -157,8 +157,8 @@ for i in $(ls ${BASE_DIR}/*.yaml | sort); do
     modified="$(cat "$i" | while IFS= read -r line; do
         nocomments="$(echo "$line" | sed -e 's/ *#.*$//')"
         if echo "$nocomments" | grep -q '^[[:space:]]*image:[[:space:]]*'; then
-            # Split 'image: quay.io/k8scsi/csi-attacher:v1.0.1'
-            # into image (quay.io/k8scsi/csi-attacher:v1.0.1),
+            # Split 'image: quay.io/k8scsi/csi-attacher:v3.0.1'
+            # into image (quay.io/k8scsi/csi-attacher:v3.0.1),
             # registry (quay.io/k8scsi),
             # name (csi-attacher),
             # tag (v1.0.1).
@@ -221,7 +221,7 @@ echo "deploying snapshotclass based on snapshotter version"
 snapshotter_version="$(rbac_version "${BASE_DIR}/csi-cryptpvc-snapshotter.yaml" csi-snapshotter false)"
 driver_version="$(basename "${BASE_DIR}")"
 if version_gt "$driver_version" "1.16"; then
-    kubectl apply -f "${BASE_DIR}/snapshotter/csi-cryptpvc-snapshotclass.yaml" 
+    kubectl apply -f "${BASE_DIR}/csi-cryptpvc-snapshotclass.yaml" 
 fi
 
 # Create a test driver configuration in the place where the prow job
